@@ -1305,7 +1305,7 @@ powerlevel9k_vcs_init() {
   fi
 
   zstyle ':vcs_info:*' enable git hg svn
-  zstyle ':vcs_info:*' check-for-changes true
+  #zstyle ':vcs_info:*' check-for-changes true
 
   VCS_DEFAULT_FORMAT="$VCS_CHANGESET_PREFIX%b%c%u%m"
   zstyle ':vcs_info:*' formats "$VCS_DEFAULT_FORMAT"
@@ -1449,6 +1449,9 @@ prompt_kubecontext() {
 build_left_prompt() {
   local index=1
   local element
+  if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == "true" ]]; then
+    POWERLEVEL9K_LEFT_PROMPT_ELEMENTS+=(newline vcs)
+  fi  
   for element in "${POWERLEVEL9K_LEFT_PROMPT_ELEMENTS[@]}"; do
     # Remove joined information in direct calls
     element=${element%_joined}
@@ -1470,6 +1473,10 @@ build_left_prompt() {
 # Right prompt
 build_right_prompt() {
   local index=1
+  if [ $COLUMNS -lt 100 ];then
+    POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(custom_set_title)
+    POWERLEVEL9K_CUSTOM_SET_TITLE_BACKGROUND="23"
+  fi
   for element in "${POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS[@]}"; do
     # Remove joined information in direct calls
     element=${element%_joined}
@@ -1582,9 +1589,7 @@ prompt_powerlevel9k_setup() {
   # initialize colors
   autoload -U colors && colors
 
-  if segment_in_use "vcs"; then
-    powerlevel9k_vcs_init
-  fi
+  powerlevel9k_vcs_init
 
   # initialize timing functions
   zmodload zsh/datetime
