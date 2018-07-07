@@ -1470,6 +1470,9 @@ build_left_prompt() {
 # Right prompt
 build_right_prompt() {
   local index=1
+  if [[ $COLUMNS -lt 100 ]]; then
+    POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(custom_set_title)
+  fi
   for element in "${POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS[@]}"; do
     # Remove joined information in direct calls
     element=${element%_joined}
